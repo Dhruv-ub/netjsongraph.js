@@ -27,7 +27,9 @@ class NetJSONGraphCore {
     // if explicitly set it to somthing like L.CRS.Simple.
     this.config.crs = NetJSONGraphDefaultConfig.crs;
     this.JSONParam = this.utils.isArray(JSONParam) ? JSONParam : [JSONParam];
+    /* eslint-disable no-underscore-dangle */
     this._selection = {nodes: [], links: []};
+    /* eslint-enable no-underscore-dangle */
   }
 
   /**
@@ -188,7 +190,9 @@ class NetJSONGraphCore {
    * @return {Array}  Array of selected node IDs
    */
   getSelectedNodes() {
+    /* eslint-disable no-underscore-dangle */
     return [...this._selection.nodes];
+    /* eslint-enable no-underscore-dangle */
   }
 
   /**
@@ -200,7 +204,9 @@ class NetJSONGraphCore {
    * @return {Array}  Array of selected link objects {source, target}
    */
   getSelectedLinks() {
+    /* eslint-disable no-underscore-dangle */
     return this._selection.links.map((link) => ({...link}));
+    /* eslint-enable no-underscore-dangle */
   }
 
   /**
@@ -210,8 +216,10 @@ class NetJSONGraphCore {
    * Clear all selected nodes and links.
    */
   clearSelection() {
+    /* eslint-disable no-underscore-dangle */
     this._selection.nodes = [];
     this._selection.links = [];
+    /* eslint-enable no-underscore-dangle */
     if (this.echarts) {
       this.echarts.dispatchAction({
         type: "unselect",

@@ -119,6 +119,7 @@ class NetJSONGraphRender {
             elementData = params.data.node;
           }
           
+          /* eslint-disable no-underscore-dangle */
           if (elementType === "node") {
             const nodeId = elementData.id;
             const idx = self._selection.nodes.indexOf(nodeId);
@@ -161,7 +162,8 @@ class NetJSONGraphRender {
               });
             }
           }
-          return;
+          /* eslint-enable no-underscore-dangle */
+          return undefined;
         }
         
         if (params.componentSubType === "graph") {
@@ -170,9 +172,13 @@ class NetJSONGraphRender {
             params.data,
           );
         }
-        return params.componentSubType === "lines"
-          ? clickElement("link", params.data.link)
-          : !params.data.cluster && clickElement("node", params.data.node);
+        if (params.componentSubType === "lines") {
+          return clickElement("link", params.data.link);
+        }
+        if (!params.data.cluster) {
+          return clickElement("node", params.data.node);
+        }
+        return undefined;
       },
       {passive: true},
     );

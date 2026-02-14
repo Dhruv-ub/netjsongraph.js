@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Node and Link Selection Example</title>
+    <meta charset="utf-8" />
+    <!-- theme can be easily customized via css -->
+    <link href="/netjsongraph.css" rel="stylesheet" />
+    <link href="/netjsongraph-theme.css" rel="stylesheet" />
+    <style>
+      .selection-panel {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(40, 34, 34, 0.95);
+        color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        min-width: 250px;
+        max-width: 350px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+      }
+      .selection-panel h3 {
+        margin: 0 0 15px 0;
+        font-size: 18px;
+        border-bottom: 2px solid #1ba619;
+        padding-bottom: 8px;
+      }
+      .selection-panel h4 {
+        margin: 15px 0 8px 0;
+        font-size: 14px;
+        color: #3acc38;
+      }
+      .selection-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .selection-panel li {
+        padding: 6px 10px;
+        margin: 4px 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        font-size: 13px;
+      }
+      .selection-panel button {
+        margin-top: 15px;
+        padding: 8px 16px;
+        background: #1ba619;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        width: 100%;
+      }
+      .selection-panel button:hover {
+        background: #3acc38;
+      }
+      .selection-panel .empty-state {
+        color: #999;
+        font-style: italic;
+        font-size: 13px;
+        padding: 10px 0;
+      }
+      .instructions {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(40, 34, 34, 0.95);
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+      }
+      .instructions h4 {
+        margin: 0 0 10px 0;
+        color: #ffeb3b;
+        font-size: 16px;
+      }
+      .instructions p {
+        margin: 8px 0;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .instructions kbd {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="selection-panel">
+      <h3>Selected Items</h3>
+      <div id="selection-content">
+        <h4>Nodes (<span id="node-count">0</span>)</h4>
+        <ul id="selected-nodes"></ul>
+        <h4>Links (<span id="link-count">0</span>)</h4>
+        <ul id="selected-links"></ul>
+      </div>
+      <button id="clear-selection">Clear Selection</button>
+    </div>
+
+    <div class="instructions">
+      <h4>How to use:</h4>
+      <p>
+        Hold <kbd>Ctrl</kbd> (or <kbd>Cmd</kbd> on Mac) and click on nodes or
+        links to select/deselect them.
+      </p>
+      <p>Click without <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> to view details.</p>
+      <p>Selected items are highlighted in yellow.</p>
+    </div>
+
+    <script type="text/javascript" src="/netjsongraph.min.js"></script>
+    <script type="text/javascript">
+      // Enable selection mode
+      const graph = new NetJSONGraph("/netjsongraph.json", {
+        echartsOption: {
+          title: {
+            text: "Node and Link Selection Example",
+            textStyle: {
+              color: "#fff",
+              fontSize: 24,
+            },
+            left: "center",
+            top: 20,
+          },
+        },
+        graphConfig: {
+          series: {
+            selectedMode: "multiple", // Enable multi-selection
+          },
+        },
+        mapOptions: {
+          nodeConfig: {
+            selectedMode: "multiple", // Enable multi-selection for map nodes
+          },
+        },
+      });
+
+      graph.render();
+
+      // Update the selection panel
+      function updateSelectionPanel() {
+        const selectedNodes = graph.getSelectedNodes();
+        const selectedLinks = graph.getSelectedLinks();
+
+        // Update counts
+        document.getElementById("node-count").textContent = selectedNodes.length;
+        document.getElementById("link-count").textContent = selectedLinks.length;
+
+        // Update nodes list
+        const nodesUl = document.getElementById("selected-nodes");
+        nodesUl.innerHTML = "";
+        if (selectedNodes.length === 0) {
+          nodesUl.innerHTML =
+            '<li class="empty-state">No nodes selected</li>';
+        } else {
+          selectedNodes.forEach((nodeId) => {
+            const li = document.createElement("li");
+            li.textContent = `Node: ${nodeId}`;
+            nodesUl.appendChild(li);
+          });
+        }
+
+        // Update links list
+        const linksUl = document.getElementById("selected-links");
+        linksUl.innerHTML = "";
+        if (selectedLinks.length === 0) {
+          linksUl.innerHTML =
+            '<li class="empty-state">No links selected</li>';
+        } else {
+          selectedLinks.forEach((link) => {
+            const li = document.createElement("li");
+            li.textContent = `Link: ${link.source} → ${link.target}`;
+            linksUl.appendChild(li);
+          });
+        }
+      }
+
+      // Update selection panel periodically
+      setInterval(updateSelectionPanel, 500);
+
+      // Clear selection button
+      document
+        .getElementById("clear-selection")
+        .addEventListener("click", () => {
+          graph.clearSelection();
+          updateSelectionPanel();
+        });
+
+      // Initial update
+      updateSelectionPanel();
+    </script>
+  </body>
+</html>

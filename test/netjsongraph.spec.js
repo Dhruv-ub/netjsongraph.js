@@ -50,6 +50,18 @@ describe("NetJSONGraphCore Specification", () => {
           opacity: 1,
         },
       },
+      select: {
+        itemStyle: {
+          borderColor: "#ffeb3b",
+          borderWidth: 3,
+        },
+        lineStyle: {
+          color: "#ffeb3b",
+          width: 8,
+          opacity: 1,
+        },
+      },
+      selectedMode: false,
       nodeStyle: {
         color: "#ffebc4",
       },
@@ -138,6 +150,13 @@ describe("NetJSONGraphCore Specification", () => {
       emphasis: {
         scale: 1,
       },
+      select: {
+        itemStyle: {
+          borderColor: "#ffeb3b",
+          borderWidth: 3,
+        },
+      },
+      selectedMode: false,
       nodeStyle: {
         color: "#1566a9",
       },
@@ -152,6 +171,13 @@ describe("NetJSONGraphCore Specification", () => {
         focus: "none",
         lineStyle: {
           color: "#3acc38",
+          opacity: 1,
+        },
+      },
+      select: {
+        lineStyle: {
+          color: "#ffeb3b",
+          width: 8,
           opacity: 1,
         },
       },
