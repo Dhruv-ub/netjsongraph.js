@@ -153,15 +153,16 @@
         const selectedLinks = graph.getSelectedLinks();
 
         // Update counts
-        document.getElementById("node-count").textContent = selectedNodes.length;
-        document.getElementById("link-count").textContent = selectedLinks.length;
+        document.getElementById("node-count").textContent =
+          selectedNodes.length;
+        document.getElementById("link-count").textContent =
+          selectedLinks.length;
 
         // Update nodes list
         const nodesUl = document.getElementById("selected-nodes");
         nodesUl.innerHTML = "";
         if (selectedNodes.length === 0) {
-          nodesUl.innerHTML =
-            '<li class="empty-state">No nodes selected</li>';
+          nodesUl.innerHTML = '<li class="empty-state">No nodes selected</li>';
         } else {
           selectedNodes.forEach((nodeId) => {
             const li = document.createElement("li");
@@ -174,8 +175,7 @@
         const linksUl = document.getElementById("selected-links");
         linksUl.innerHTML = "";
         if (selectedLinks.length === 0) {
-          linksUl.innerHTML =
-            '<li class="empty-state">No links selected</li>';
+          linksUl.innerHTML = '<li class="empty-state">No links selected</li>';
         } else {
           selectedLinks.forEach((link) => {
             const li = document.createElement("li");
