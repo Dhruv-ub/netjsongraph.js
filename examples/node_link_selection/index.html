@@ -185,8 +185,21 @@
         }
       }
 
-      // Update selection panel periodically
-      setInterval(updateSelectionPanel, 500);
+      // Update selection panel on graph clicks (when Ctrl/Cmd is pressed)
+      // Since we can't directly hook into ECharts' internal selection events,
+      // we listen to all clicks and update if selection might have changed
+      graph.event.on("onReady", () => {
+        graph.echarts.on("click", (params) => {
+          // Only update if this was a selection action (Ctrl/Cmd key)
+          if (
+            params.event &&
+            (params.event.event.ctrlKey || params.event.event.metaKey)
+          ) {
+            // Small delay to allow selection state to update
+            setTimeout(updateSelectionPanel, 10);
+          }
+        });
+      });
 
       // Clear selection button
       document

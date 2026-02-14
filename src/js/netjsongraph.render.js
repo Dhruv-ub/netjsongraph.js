@@ -163,22 +163,22 @@ class NetJSONGraphRender {
             }
           }
           /* eslint-enable no-underscore-dangle */
-          return undefined;
+          return;
         }
         
+        // Handle regular clicks
+        let elementType;
+        let elementData;
+        
         if (params.componentSubType === "graph") {
-          return clickElement(
-            params.dataType === "edge" ? "link" : "node",
-            params.data,
-          );
+          elementType = params.dataType === "edge" ? "link" : "node";
+          elementData = params.data;
+          clickElement(elementType, elementData);
+        } else if (params.componentSubType === "lines") {
+          clickElement("link", params.data.link);
+        } else if (!params.data.cluster) {
+          clickElement("node", params.data.node);
         }
-        if (params.componentSubType === "lines") {
-          return clickElement("link", params.data.link);
-        }
-        if (!params.data.cluster) {
-          return clickElement("node", params.data.node);
-        }
-        return undefined;
       },
       {passive: true},
     );
