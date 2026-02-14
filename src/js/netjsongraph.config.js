@@ -94,6 +94,18 @@ const NetJSONGraphDefaultConfig = {
           opacity: 1,
         },
       },
+      select: {
+        itemStyle: {
+          borderColor: "#ffeb3b",
+          borderWidth: 3,
+        },
+        lineStyle: {
+          color: "#ffeb3b",
+          width: 8,
+          opacity: 1,
+        },
+      },
+      selectedMode: false,
       nodeStyle: {
         color: "#ffebc4",
       },
@@ -183,6 +195,13 @@ const NetJSONGraphDefaultConfig = {
       emphasis: {
         scale: 1,
       },
+      select: {
+        itemStyle: {
+          borderColor: "#ffeb3b",
+          borderWidth: 3,
+        },
+      },
+      selectedMode: false,
       nodeStyle: {
         color: "#1566a9",
       },
@@ -197,6 +216,13 @@ const NetJSONGraphDefaultConfig = {
         focus: "none",
         lineStyle: {
           color: "#3acc38",
+          opacity: 1,
+        },
+      },
+      select: {
+        lineStyle: {
+          color: "#ffeb3b",
+          width: 8,
           opacity: 1,
         },
       },

@@ -101,6 +101,69 @@ class NetJSONGraphRender {
       (params) => {
         const clickElement = configs.onClickElement.bind(self);
         self.utils.addActionToUrl(self, params);
+        
+        // Handle selection with Ctrl/Cmd key
+        if (params.event && (params.event.event.ctrlKey || params.event.event.metaKey)) {
+          const seriesId = params.seriesId || params.seriesIndex;
+          let elementType;
+          let elementData;
+          
+          if (params.componentSubType === "graph") {
+            elementType = params.dataType === "edge" ? "link" : "node";
+            elementData = params.data;
+          } else if (params.componentSubType === "lines") {
+            elementType = "link";
+            elementData = params.data.link;
+          } else if (params.componentSubType === "scatter") {
+            elementType = "node";
+            elementData = params.data.node;
+          }
+          
+          if (elementType === "node") {
+            const nodeId = elementData.id;
+            const idx = self._selection.nodes.indexOf(nodeId);
+            if (idx === -1) {
+              self._selection.nodes.push(nodeId);
+              echartsLayer.dispatchAction({
+                type: "select",
+                seriesId,
+                dataIndex: params.dataIndex,
+              });
+            } else {
+              self._selection.nodes.splice(idx, 1);
+              echartsLayer.dispatchAction({
+                type: "unselect",
+                seriesId,
+                dataIndex: params.dataIndex,
+              });
+            }
+          } else if (elementType === "link") {
+            const linkKey = `${elementData.source}-${elementData.target}`;
+            const idx = self._selection.links.findIndex(
+              (l) => `${l.source}-${l.target}` === linkKey,
+            );
+            if (idx === -1) {
+              self._selection.links.push({
+                source: elementData.source,
+                target: elementData.target,
+              });
+              echartsLayer.dispatchAction({
+                type: "select",
+                seriesId,
+                dataIndex: params.dataIndex,
+              });
+            } else {
+              self._selection.links.splice(idx, 1);
+              echartsLayer.dispatchAction({
+                type: "unselect",
+                seriesId,
+                dataIndex: params.dataIndex,
+              });
+            }
+          }
+          return;
+        }
+        
         if (params.componentSubType === "graph") {
           return clickElement(
             params.dataType === "edge" ? "link" : "node",
@@ -143,6 +206,11 @@ class NetJSONGraphRender {
         itemStyle: nodeEmphasisConfig.nodeStyle,
         symbolSize: nodeEmphasisConfig.nodeSize,
       };
+      if (configs.graphConfig.series.select) {
+        nodeResult.select = {
+          itemStyle: configs.graphConfig.series.select.itemStyle,
+        };
+      }
       let resolvedName = "";
       if (typeof node.label === "string") {
         resolvedName = node.label;
@@ -166,6 +234,9 @@ class NetJSONGraphRender {
       );
       linkResult.lineStyle = linkStyleConfig;
       linkResult.emphasis = {lineStyle: linkEmphasisConfig.linkStyle};
+      if (configs.graphConfig.series.select) {
+        linkResult.select = {lineStyle: configs.graphConfig.series.select.lineStyle};
+      }
       return linkResult;
     });
 
@@ -277,7 +348,7 @@ class NetJSONGraphRender {
           } else if (node.id !== undefined && node.id !== null) {
             nodeName = String(node.id);
           }
-          nodesData.push({
+          const nodeData = {
             name: nodeName,
             value: [location.lng, location.lat],
             emphasis: {
@@ -286,7 +357,13 @@ class NetJSONGraphRender {
             },
             node,
             _source: self.utils.fastDeepCopy(node),
-          });
+          };
+          if (configs.mapOptions.nodeConfig.select) {
+            nodeData.select = {
+              itemStyle: configs.mapOptions.nodeConfig.select.itemStyle,
+            };
+          }
+          nodesData.push(nodeData);
         }
       }
     });
@@ -301,7 +378,7 @@ class NetJSONGraphRender {
           configs,
           "map",
         );
-        linesData.push({
+        const linkData = {
           coords: [
             [
               flatNodes[link.source].properties.location.lng,
@@ -315,7 +392,11 @@ class NetJSONGraphRender {
           lineStyle: linkStyleConfig,
           emphasis: {lineStyle: linkEmphasisConfig.linkStyle},
           link,
-        });
+        };
+        if (configs.mapOptions.linkConfig.select) {
+          linkData.select = {lineStyle: configs.mapOptions.linkConfig.select.lineStyle};
+        }
+        linesData.push(linkData);
       }
     });
 
@@ -385,12 +466,15 @@ class NetJSONGraphRender {
           );
         },
         emphasis: configs.mapOptions.nodeConfig.emphasis,
+        select: configs.mapOptions.nodeConfig.select,
+        selectedMode: configs.mapOptions.nodeConfig.selectedMode,
       },
       Object.assign(configs.mapOptions.linkConfig, {
         id: "map-links",
         type: "lines",
         coordinateSystem: "leaflet",
         data: linesData,
+        select: configs.mapOptions.linkConfig.select,
       }),
     ];
 

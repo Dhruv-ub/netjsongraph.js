@@ -27,6 +27,7 @@ class NetJSONGraphCore {
     // if explicitly set it to somthing like L.CRS.Simple.
     this.config.crs = NetJSONGraphDefaultConfig.crs;
     this.JSONParam = this.utils.isArray(JSONParam) ? JSONParam : [JSONParam];
+    this._selection = {nodes: [], links: []};
   }
 
   /**
@@ -175,6 +176,47 @@ class NetJSONGraphCore {
       };
       this.JSONParam = [JSONParam];
       this.event.once("renderArray", renderArray.bind(this));
+    }
+  }
+
+  /**
+   * @function
+   * @name getSelectedNodes
+   *
+   * Get the list of selected node IDs.
+   *
+   * @return {Array}  Array of selected node IDs
+   */
+  getSelectedNodes() {
+    return [...this._selection.nodes];
+  }
+
+  /**
+   * @function
+   * @name getSelectedLinks
+   *
+   * Get the list of selected links.
+   *
+   * @return {Array}  Array of selected link objects {source, target}
+   */
+  getSelectedLinks() {
+    return this._selection.links.map((link) => ({...link}));
+  }
+
+  /**
+   * @function
+   * @name clearSelection
+   *
+   * Clear all selected nodes and links.
+   */
+  clearSelection() {
+    this._selection.nodes = [];
+    this._selection.links = [];
+    if (this.echarts) {
+      this.echarts.dispatchAction({
+        type: "unselect",
+        seriesId: ["network-graph", "geo-map", "map-links"],
+      });
     }
   }
 
